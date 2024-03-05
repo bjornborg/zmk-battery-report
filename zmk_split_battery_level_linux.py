@@ -32,16 +32,18 @@ async def main():
                 intp = await bus.introspect(BLUEZ, char)
                 proxy = bus.get_proxy_object(BLUEZ, char, intp)
                 intf = proxy.get_interface(GATT_CHARACTERISCITC)
-                level = int.from_bytes(await intf.call_read_value({}))
+                level = int.from_bytes(await intf.call_read_value({}), byteorder='big')
                 if BATTERY_LEVEL_UUID == await intf.get_uuid():
-                    props = proxy.get_interface('org.freedesktop.DBus.Properties')    
+                    props = proxy.get_interface(
+                        'org.freedesktop.DBus.Properties')
                     for desc in proxy.child_paths:
                         intp = await bus.introspect(BLUEZ, desc)
                         proxy = bus.get_proxy_object(BLUEZ, desc, intp)
                         intf = proxy.get_interface(GATT_CHARACTERISCITC_DESCR)
-                        name = "Main"
+                        name = "Central"
                         if BATTERY_USER_DESC == await intf.get_uuid():
                             name = bytearray(await intf.call_read_value({})).decode()
                     print(name + ": ", str(level))
 
 loop.run_until_complete(main())
+
