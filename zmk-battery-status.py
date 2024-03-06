@@ -1,9 +1,13 @@
+#!/usr/bin/python3
+
 from dbus_next.aio import MessageBus
 from dbus_next.constants import BusType
 import asyncio
+import sys
+
 BLUEZ = "org.bluez"
-#replace hci0 with your bluetooth adapter name and FF_FF_FF_FF_FF_FF with your keyboard address
-BLUEZ_PATH = "/org/bluez/hci0/dev_FF_FF_FF_FF_FF_FF"
+# replace hci0 with your bluetooth adapter name and FF_FF_FF_FF_FF_FF with your keyboard address
+BLUEZ_PATH = "/org/bluez/hci0/"
 GATT_SERVICE = 'org.bluez.GattService1'
 GATT_CHARACTERISCITC = 'org.bluez.GattCharacteristic1'
 GATT_CHARACTERISCITC_DESCR = 'org.bluez.GattDescriptor1'
@@ -16,12 +20,18 @@ loop = asyncio.get_event_loop()
 
 
 async def main():
+    args = sys.argv[1:]
+    btAdapterAddr = args[0].replace(':', '_')
+    BLUEZ_DEVICE_PATH = BLUEZ_PATH+"dev_{}".format(btAdapterAddr)
+
+    print(BLUEZ_DEVICE_PATH)
+
     bus = await MessageBus(bus_type=BusType.SYSTEM).connect()
     # the introspection xml would normally be included in your project, but
     # this is convenient for development
-    introspection = await bus.introspect(BLUEZ, BLUEZ_PATH)
+    introspection = await bus.introspect(BLUEZ, BLUEZ_DEVICE_PATH)
 
-    device = bus.get_proxy_object(BLUEZ, BLUEZ_PATH, introspection)
+    device = bus.get_proxy_object(BLUEZ, BLUEZ_DEVICE_PATH, introspection)
 
     for svc in device.child_paths:
         intp = await bus.introspect(BLUEZ, svc)
@@ -46,4 +56,3 @@ async def main():
                     print(name + ": ", str(level))
 
 loop.run_until_complete(main())
-
