@@ -24,7 +24,7 @@ async def main():
     btAdapterAddr = args[0].replace(':', '_')
     BLUEZ_DEVICE_PATH = BLUEZ_PATH+"dev_{}".format(btAdapterAddr)
 
-    print(BLUEZ_DEVICE_PATH)
+    # print(BLUEZ_DEVICE_PATH)
 
     bus = await MessageBus(bus_type=BusType.SYSTEM).connect()
     # the introspection xml would normally be included in your project, but
