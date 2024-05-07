@@ -15,8 +15,8 @@ BATTERY_UUID = "0000180f-0000-1000-8000-00805f9b34fb"
 BATTERY_LEVEL_UUID = "00002a19-0000-1000-8000-00805f9b34fb"
 BATTERY_USER_DESC = "00002901-0000-1000-8000-00805f9b34fb"
 
-
-loop = asyncio.get_event_loop()
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
 
 
 async def main():
